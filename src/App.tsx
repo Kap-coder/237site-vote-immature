@@ -873,7 +873,7 @@ export default function App() {
             <motion.div initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-4xl">
               <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-white/5 px-4 py-2">
                 <Sparkles className="h-4 w-4 text-gold-500" />
-                <span className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-400">Rouge blanc or noir</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-400">Vote de prestige</span>
               </div>
               <h1 className="font-serif text-6xl font-black leading-[0.9] tracking-tighter text-white sm:text-8xl">
                 La Villa des <span className="gold-gradient">Immatures</span>
