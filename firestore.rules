@@ -22,6 +22,15 @@ service cloud.firestore {
     //   - userId: string (required)
     //   - candidateId: string (required)
     //   - timestamp: timestamp (required)
+    //   - quantity: number (required)
+    //   - voteType: string (free|paid)
+    //   - paymentMethod: string
+    //   - amountPaid: number
+    //
+    // Document: config/site
+    //   - votePrice: number (admin only)
+    //   - eventName: string
+    //   - eventDescription: string
     // ===============================================================
 
     // Helper Functions
@@ -49,10 +58,17 @@ service cloud.firestore {
     }
 
     function isValidVote(data) {
-      return data.keys().hasAll(['userId', 'candidateId', 'timestamp']) &&
+      return data.keys().hasAll(['userId', 'candidateId', 'timestamp', 'quantity', 'voteType', 'paymentMethod', 'amountPaid']) &&
              data.userId == request.auth.uid &&
              data.candidateId is string &&
-             data.timestamp is timestamp;
+             data.timestamp is timestamp &&
+             data.quantity is int &&
+             data.quantity >= 1 &&
+             data.quantity <= 10000 &&
+             data.voteType in ['free', 'paid'] &&
+             data.paymentMethod is string &&
+             data.amountPaid is number &&
+             data.amountPaid >= 0;
     }
 
     // Rules
@@ -61,7 +77,7 @@ service cloud.firestore {
       allow create: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && 
         (request.resource.data.role == 'user' || 
          (request.resource.data.role == 'admin' && request.auth.token.email == "angekapel007@gmail.com" && request.auth.token.email_verified == true));
-      allow update: if isAdmin() || (isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hasVoted']));
+      allow update: if isAdmin() || (isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hasVoted', 'totalVotesPurchased']));
     }
 
     match /candidates/{candidateId} {
@@ -71,8 +87,20 @@ service cloud.firestore {
       // Special rule for incrementing/decrementing vote count via batch/transaction
       allow update: if isAuthenticated() && 
                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['voteCount']) &&
-                    (request.resource.data.voteCount == resource.data.voteCount + 1 || 
-                     request.resource.data.voteCount == resource.data.voteCount - 1);
+                    request.resource.data.voteCount is number &&
+                    request.resource.data.voteCount >= 0 &&
+                    (
+                      (
+                        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.hasVoted == false &&
+                        request.resource.data.voteCount > resource.data.voteCount &&
+                        request.resource.data.voteCount <= resource.data.voteCount + 10000
+                      ) ||
+                      (
+                        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.hasVoted == true &&
+                        request.resource.data.voteCount < resource.data.voteCount &&
+                        request.resource.data.voteCount >= resource.data.voteCount - 10000
+                      )
+                    );
     }
 
     match /votes/{voteId} {
@@ -86,6 +114,15 @@ service cloud.firestore {
 
     match /admin_emails/{email} {
       allow read, write: if isAdmin();
+    }
+
+    match /config/{configId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() &&
+                   request.resource.data.votePrice is number &&
+                   request.resource.data.votePrice >= 1 &&
+                   request.resource.data.eventName is string &&
+                   request.resource.data.eventDescription is string;
     }
   }
 }

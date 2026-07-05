@@ -16,7 +16,7 @@ import {
   addDoc
 } from 'firebase/firestore';
 import { db, auth } from '../firebase';
-import { Candidate, UserProfile, Vote } from '../types';
+import { Candidate, SiteConfig, UserProfile, Vote } from '../types';
 
 enum OperationType {
   CREATE = 'create',
@@ -133,28 +133,34 @@ export const dbService = {
   },
 
   // Voting Logic (Atomic Transaction/Batch)
-  async castVote(userId: string, candidateId: string) {
+  async castVote(userId: string, candidateId: string, quantity = 1, paymentMethod = 'demo', amountPaid = 0) {
     try {
       const batch = writeBatch(db);
+      const safeQuantity = Math.max(1, Math.floor(quantity));
 
       // 1. Create vote record (using userId as ID to ensure one vote per user)
       const voteRef = doc(db, 'votes', userId);
       batch.set(voteRef, {
         userId,
         candidateId,
-        timestamp: Timestamp.now()
+        timestamp: Timestamp.now(),
+        voteType: safeQuantity > 1 ? 'paid' : 'free',
+        quantity: safeQuantity,
+        paymentMethod,
+        amountPaid
       });
 
       // 2. Update candidate vote count
       const candidateRef = doc(db, 'candidates', candidateId);
       batch.update(candidateRef, {
-        voteCount: increment(1)
+        voteCount: increment(safeQuantity)
       });
 
       // 3. Mark user as voted
       const userRef = doc(db, 'users', userId);
       batch.update(userRef, {
-        hasVoted: true
+        hasVoted: true,
+        totalVotesPurchased: increment(safeQuantity)
       });
 
       await batch.commit();
@@ -163,9 +169,10 @@ export const dbService = {
     }
   },
 
-  async cancelVote(userId: string, candidateId: string) {
+  async cancelVote(userId: string, candidateId: string, quantity = 1) {
     try {
       const batch = writeBatch(db);
+      const safeQuantity = Math.max(1, Math.floor(quantity));
 
       // 1. Delete vote record
       const voteRef = doc(db, 'votes', userId);
@@ -174,7 +181,7 @@ export const dbService = {
       // 2. Decrement candidate vote count
       const candidateRef = doc(db, 'candidates', candidateId);
       batch.update(candidateRef, {
-        voteCount: increment(-1)
+        voteCount: increment(-safeQuantity)
       });
 
       // 3. Mark user as not voted
@@ -251,6 +258,26 @@ export const dbService = {
       return snapshot.exists();
     } catch (error) {
       return false;
+    }
+  },
+
+  subscribeSiteConfig(callback: (config: SiteConfig) => void) {
+    const defaultConfig: SiteConfig = {
+      votePrice: 100,
+      eventName: 'La Villa des Immatures',
+      eventDescription: "Vote de prestige, ambiance chic et resultats en direct."
+    };
+
+    return onSnapshot(doc(db, 'config', 'site'), (snapshot) => {
+      callback(snapshot.exists() ? { ...defaultConfig, ...snapshot.data() } as SiteConfig : defaultConfig);
+    }, (error) => handleFirestoreError(error, OperationType.GET, 'config/site'));
+  },
+
+  async updateSiteConfig(config: Partial<SiteConfig>) {
+    try {
+      await setDoc(doc(db, 'config', 'site'), config, { merge: true });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, 'config/site');
     }
   },
 
