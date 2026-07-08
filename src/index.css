@@ -104,7 +104,7 @@
   }
   
   .ranking-badge {
-    @apply absolute top-4 right-4 w-12 h-12 rounded-full flex items-center justify-center font-black text-sm;
+    @apply absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center font-black text-[10px] sm:top-4 sm:right-4 sm:w-12 sm:h-12 sm:text-sm;
   }
   
   .ranking-1 {

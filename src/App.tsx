@@ -9,19 +9,24 @@ import {
   ArrowLeft,
   Banknote,
   BarChart3,
+  CalendarDays,
   Camera,
   CheckCircle2,
   ChevronRight,
   CreditCard,
   Crown,
+  Gem,
+  Handshake,
   Landmark,
   LayoutDashboard,
   LogOut,
   Plus,
+  Radio,
   Save,
   ShieldCheck,
   Smartphone,
   Sparkles,
+  Star,
   Trophy,
   Trash2,
   Upload,
@@ -57,6 +62,40 @@ const PAYMENT_METHODS: PaymentMethod[] = [
   { id: 'bank-card', name: 'Carte bancaire', icon: 'card', color: '#d4af37', enabled: true },
   { id: 'bank-transfer', name: 'Virement bancaire', icon: 'bank', color: '#fafafa', enabled: true },
   { id: 'cash-demo', name: 'Cash demo', icon: 'cash', color: '#22c55e', enabled: true }
+];
+
+const LANDING_NAV = [
+  { label: 'Experience', href: '#experience' },
+  { label: 'Partenaires', href: '#partenaires' },
+  { label: 'Paiements', href: '#paiements' },
+  { label: 'Connexion', href: '#connexion' }
+];
+
+const EVENT_FEATURES = [
+  {
+    icon: Trophy,
+    title: 'Classement live',
+    text: 'Les votes montent en temps reel avec un podium clair et spectaculaire.'
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Vote controle',
+    text: 'Prix parametrable par admin, paiement demo et historique lisible.'
+  },
+  {
+    icon: Radio,
+    title: 'Animation publique',
+    text: 'Une interface qui donne envie de voter, partager et suivre la competition.'
+  }
+];
+
+const PARTNERS = ['Villa Prime', 'Gold Studio', 'Prestige Night', 'Media 237', 'Royal Drinks', 'Event Pulse'];
+
+const SALES_POINTS = [
+  'Landing page premium pour convaincre sponsors et public.',
+  'Espace partenaires pret pour logos, marques et packs visibility.',
+  'Parcours vote fluide: candidat, montant, paiement demo, resultat.',
+  'Design mobile vivant pour maximiser les votes pendant l evenement.'
 ];
 
 const formatMoney = (value: number) => new Intl.NumberFormat('fr-CM').format(value);
@@ -169,9 +208,9 @@ const CandidateCard = ({ candidate, position, onOpen, disabled, hasVoted }: {
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: '-60px' }}
     whileHover={{ y: -8 }}
-    className="group overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.055] shadow-2xl backdrop-blur-xl"
+    className="group overflow-hidden rounded-[1.25rem] border border-white/10 bg-white/[0.055] shadow-2xl backdrop-blur-xl sm:rounded-[2rem]"
   >
-    <div className="relative aspect-[16/13] overflow-hidden bg-black">
+    <div className="relative aspect-[4/5] overflow-hidden bg-black sm:aspect-[16/13]">
       <img
         src={candidate.image || `https://picsum.photos/seed/${candidate.id}/900/700`}
         alt={candidate.name}
@@ -183,25 +222,25 @@ const CandidateCard = ({ candidate, position, onOpen, disabled, hasVoted }: {
       <div className={`ranking-badge ${position === 1 ? 'ranking-1' : position === 2 ? 'ranking-2' : position === 3 ? 'ranking-3' : 'bg-black/70 text-white ring-1 ring-white/15'}`}>
         {positionLabel(position)}
       </div>
-      <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
+      <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2 sm:bottom-5 sm:left-5 sm:right-5 sm:gap-4">
         <div>
-          <p className="mb-2 inline-flex rounded-full border border-gold-500/30 bg-black/45 px-3 py-1 text-[10px] font-black uppercase tracking-[0.25em] text-gold-300">
+          <p className="mb-2 inline-flex rounded-full border border-gold-500/30 bg-black/45 px-2 py-1 text-[8px] font-black uppercase tracking-[0.16em] text-gold-300 sm:px-3 sm:text-[10px] sm:tracking-[0.25em]">
             {formatMoney(candidate.voteCount)} votes
           </p>
-          <h3 className="font-serif text-3xl font-black leading-none text-white">{candidate.name}</h3>
+          <h3 className="font-serif text-lg font-black leading-none text-white sm:text-3xl">{candidate.name}</h3>
         </div>
-        {position === 1 && <Crown className="h-9 w-9 flex-shrink-0 text-gold-400 drop-shadow" />}
+        {position === 1 && <Crown className="h-6 w-6 flex-shrink-0 text-gold-400 drop-shadow sm:h-9 sm:w-9" />}
       </div>
     </div>
 
-    <div className="space-y-5 p-6">
-      <p className="line-clamp-3 min-h-[4.5rem] text-sm font-medium leading-relaxed text-slate-300">
+    <div className="space-y-3 p-3 sm:space-y-5 sm:p-6">
+      <p className="line-clamp-2 min-h-[2.5rem] text-xs font-medium leading-relaxed text-slate-300 sm:line-clamp-3 sm:min-h-[4.5rem] sm:text-sm">
         {candidate.description || 'Une candidate prete a marquer la soiree avec style, energie et presence.'}
       </p>
       <button
         onClick={() => onOpen(candidate)}
         disabled={disabled && !hasVoted}
-        className="w-full rounded-2xl px-6 py-4 text-xs font-black uppercase tracking-[0.22em] transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 gold-button"
+        className="w-full rounded-xl px-3 py-3 text-[9px] font-black uppercase tracking-[0.14em] transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 gold-button sm:rounded-2xl sm:px-6 sm:py-4 sm:text-xs sm:tracking-[0.22em]"
       >
         {hasVoted ? 'Voir mon choix' : 'Voter maintenant'}
       </button>
@@ -418,6 +457,236 @@ const CandidateDetail = ({ candidate, position, config, hasVoted, onBack, onStar
       </div>
     </div>
   </motion.section>
+);
+
+const PublicLanding = ({
+  email,
+  password,
+  showEmailLogin,
+  onEmailChange,
+  onPasswordChange,
+  onGoogleLogin,
+  onEmailLogin,
+  onShowEmailLogin
+}: {
+  email: string;
+  password: string;
+  showEmailLogin: boolean;
+  onEmailChange: (value: string) => void;
+  onPasswordChange: (value: string) => void;
+  onGoogleLogin: () => void;
+  onEmailLogin: (event: React.FormEvent) => void;
+  onShowEmailLogin: (value: boolean) => void;
+}) => (
+  <section className="relative overflow-hidden">
+    <div className="mx-auto mb-10 flex max-w-5xl items-center justify-center">
+      <div className="flex w-full flex-wrap items-center justify-center gap-2 rounded-full border border-white/10 bg-black/35 p-2 backdrop-blur-xl sm:w-auto">
+        {LANDING_NAV.map((item) => (
+          <a
+            key={item.href}
+            href={item.href}
+            className="rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-300 transition hover:bg-gold-500 hover:text-black"
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div id="experience" className="grid min-h-[72vh] items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+      <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center lg:text-left">
+        <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-gold-500/10 px-4 py-2">
+          <Sparkles className="h-4 w-4 text-gold-400" />
+          <span className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-300">Evenement premium</span>
+        </div>
+        <h1 className="font-serif text-6xl font-black leading-[0.88] tracking-tighter text-white sm:text-8xl">
+          La Villa des <span className="gold-gradient">Immatures</span>
+        </h1>
+        <p className="mx-auto mt-7 max-w-2xl text-lg font-medium leading-relaxed text-slate-300 lg:mx-0">
+          Une plateforme de vote chic pour transformer votre evenement en experience visible, sponsorisable et memorable.
+        </p>
+
+        <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+          <a href="#connexion" className="rounded-2xl px-6 py-4 text-xs font-black uppercase tracking-[0.22em] gold-button">
+            Demarrer le vote
+          </a>
+          <a href="#partenaires" className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-xs font-black uppercase tracking-[0.22em] text-white transition hover:border-red-400/50 hover:bg-red-500/10">
+            Voir les espaces
+          </a>
+        </div>
+
+        <div className="mt-10 grid grid-cols-3 gap-3">
+          {[
+            ['100%', 'mobile'],
+            ['Live', 'classement'],
+            ['Demo', 'paiement']
+          ].map(([value, label]) => (
+            <motion.div
+              key={label}
+              whileHover={{ y: -4 }}
+              className="rounded-2xl border border-white/10 bg-white/[0.045] p-4 text-center backdrop-blur-xl"
+            >
+              <p className="font-serif text-2xl font-black text-white sm:text-4xl">{value}</p>
+              <p className="mt-1 text-[9px] font-black uppercase tracking-[0.22em] text-gold-400">{label}</p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.65, delay: 0.1 }}
+        className="relative"
+      >
+        <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-red-700/30 via-gold-500/10 to-black blur-2xl" />
+        <div className="relative overflow-hidden rounded-[3rem] border border-white/10 bg-black/45 p-5 shadow-2xl backdrop-blur-xl">
+          <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} className="rounded-[2.5rem] border border-gold-500/20 bg-gradient-to-br from-red-950 via-black to-[#2a1600] p-7">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-red-200">Soiree officielle</p>
+                <h2 className="mt-2 font-serif text-4xl font-black text-white">Vote prestige</h2>
+              </div>
+              <Crown className="h-12 w-12 text-gold-400" />
+            </div>
+            <div className="mt-8 space-y-4">
+              {SALES_POINTS.map((point, index) => (
+                <motion.div
+                  key={point}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.25 + index * 0.08 }}
+                  className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
+                >
+                  <Star className="mt-0.5 h-4 w-4 flex-shrink-0 text-gold-400" />
+                  <p className="text-sm font-bold leading-relaxed text-slate-200">{point}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
+    </div>
+
+    <div className="mt-16 grid gap-5 md:grid-cols-3">
+      {EVENT_FEATURES.map(({ icon: Icon, title, text }, index) => (
+        <motion.article
+          key={title}
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: index * 0.08 }}
+          className="glass-card rounded-[2rem] p-6"
+        >
+          <div className="mb-5 inline-flex rounded-2xl bg-red-500/10 p-3 text-gold-400 ring-1 ring-red-400/20">
+            <Icon className="h-6 w-6" />
+          </div>
+          <h3 className="font-serif text-2xl font-black text-white">{title}</h3>
+          <p className="mt-3 text-sm font-medium leading-relaxed text-slate-400">{text}</p>
+        </motion.article>
+      ))}
+    </div>
+
+    <div id="partenaires" className="mt-16 rounded-[3rem] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl sm:p-8">
+      <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-red-300">Visibilite sponsor</p>
+          <h2 className="mt-2 font-serif text-4xl font-black text-white">Espaces partenaires</h2>
+        </div>
+        <p className="max-w-md text-sm font-medium leading-relaxed text-slate-400">
+          Zones pretes pour logos, marques, boissons, medias, lieux et sponsors officiels.
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+        {PARTNERS.map((partner, index) => (
+          <motion.div
+            key={partner}
+            animate={{ y: [0, index % 2 === 0 ? -7 : 7, 0] }}
+            transition={{ duration: 4 + index * 0.25, repeat: Infinity, ease: 'easeInOut' }}
+            className="flex min-h-28 items-center justify-center rounded-2xl border border-gold-500/15 bg-black/35 p-4 text-center"
+          >
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-gold-200">{partner}</p>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+
+    <div className="mt-16 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+      <div id="paiements" className="glass-card rounded-[3rem] p-7 sm:p-8">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="rounded-2xl bg-gold-500/15 p-3 text-gold-400">
+            <CreditCard className="h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-red-300">Paiements demo</p>
+            <h2 className="font-serif text-3xl font-black text-white">Canaux populaires</h2>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {PAYMENT_METHODS.slice(0, 8).map((method) => {
+            const Icon = getPaymentIcon(method.icon);
+            return (
+              <div key={method.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+                <Icon className="mb-3 h-5 w-5" style={{ color: method.color }} />
+                <p className="text-xs font-black text-white">{method.name}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div id="connexion" className="glass-card rounded-[3rem] p-7 sm:p-10">
+        <div className="mb-8 text-center">
+          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-400">Acces vote</p>
+          <h2 className="mt-2 font-serif text-4xl font-black text-white">Entrer dans la Villa</h2>
+          <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-400">
+            Connectez-vous pour voter, suivre les candidats et participer a l ambiance.
+          </p>
+        </div>
+
+        <div className="mx-auto max-w-md space-y-7">
+          <button onClick={onGoogleLogin} className="flex w-full items-center justify-center gap-4 rounded-2xl bg-white px-10 py-5 text-lg font-black text-black shadow-[0_0_40px_rgba(255,255,255,0.12)] transition hover:bg-gold-500 hover:scale-[1.02]">
+            <img src="https://www.google.com/favicon.ico" className="h-6 w-6" alt="Google" loading="lazy" />
+            Continuer avec Google
+          </button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/10" /></div>
+            <div className="relative flex justify-center text-[10px] uppercase tracking-[0.4em]"><span className="bg-[#120808] px-4 font-black text-slate-500">Ou</span></div>
+          </div>
+
+          {!showEmailLogin ? (
+            <button onClick={() => onShowEmailLogin(true)} className="w-full text-xs font-black uppercase tracking-widest text-gold-400 transition hover:text-white">
+              Acces par identifiants
+            </button>
+          ) : (
+            <form onSubmit={onEmailLogin} className="space-y-5 text-left">
+              <input type="email" required placeholder="Adresse email" className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none focus:ring-2 focus:ring-gold-500" value={email} onChange={(event) => onEmailChange(event.target.value)} />
+              <input type="password" required placeholder="Mot de passe" className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none focus:ring-2 focus:ring-gold-500" value={password} onChange={(event) => onPasswordChange(event.target.value)} />
+              <button type="submit" className="flex w-full items-center justify-center gap-3 rounded-2xl py-5 gold-button">
+                Se connecter
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+
+    <div className="mt-16 grid gap-5 md:grid-cols-3">
+      {[
+        { icon: CalendarDays, title: 'Avant event', text: 'Annoncez les candidats, ouvrez les votes et vendez la visibilite.' },
+        { icon: Handshake, title: 'Pendant event', text: 'Animez la salle avec le classement et les paiements demo.' },
+        { icon: Gem, title: 'Apres event', text: 'Valorisez les resultats, les sponsors et la prochaine edition.' }
+      ].map(({ icon: Icon, title, text }) => (
+        <div key={title} className="rounded-[2rem] border border-white/10 bg-black/30 p-6">
+          <Icon className="mb-4 h-6 w-6 text-gold-400" />
+          <h3 className="font-serif text-2xl font-black text-white">{title}</h3>
+          <p className="mt-3 text-sm font-medium leading-relaxed text-slate-400">{text}</p>
+        </div>
+      ))}
+    </div>
+  </section>
 );
 
 const AdminPanel = ({ candidates, users, votes, config }: {
@@ -869,47 +1138,16 @@ export default function App() {
         <div className="pointer-events-none fixed right-[-10%] top-48 h-96 w-96 rounded-full bg-gold-500/15 blur-[120px]" />
 
         {!user ? (
-          <section className="relative flex min-h-[72vh] items-center justify-center py-16 text-center">
-            <motion.div initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-4xl">
-              <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-white/5 px-4 py-2">
-                <Sparkles className="h-4 w-4 text-gold-500" />
-                <span className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-400">Vote de prestige</span>
-              </div>
-              <h1 className="font-serif text-6xl font-black leading-[0.9] tracking-tighter text-white sm:text-8xl">
-                La Villa des <span className="gold-gradient">Immatures</span>
-              </h1>
-              <p className="mx-auto mt-8 max-w-2xl text-lg font-medium leading-relaxed text-slate-300 sm:text-xl">
-                Un vote de prestige rapide, luxueux et vivant. Choisissez votre favori, payez en mode demo, et regardez le classement bouger.
-              </p>
-
-              <div className="mx-auto mt-12 max-w-md space-y-7">
-                <button onClick={handleLogin} className="flex w-full items-center justify-center gap-4 rounded-2xl bg-white px-10 py-5 text-lg font-black text-black shadow-[0_0_40px_rgba(255,255,255,0.12)] transition hover:bg-gold-500 hover:scale-[1.02]">
-                  <img src="https://www.google.com/favicon.ico" className="h-6 w-6" alt="Google" loading="lazy" />
-                  Continuer avec Google
-                </button>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/10" /></div>
-                  <div className="relative flex justify-center text-[10px] uppercase tracking-[0.4em]"><span className="bg-[#080606] px-4 font-black text-slate-500">Ou</span></div>
-                </div>
-
-                {!showEmailLogin ? (
-                  <button onClick={() => setShowEmailLogin(true)} className="text-xs font-black uppercase tracking-widest text-gold-400 transition hover:text-white">
-                    Acces par identifiants
-                  </button>
-                ) : (
-                  <form onSubmit={handleEmailLogin} className="glass-card space-y-5 rounded-[2.5rem] p-8 text-left">
-                    <input type="email" required placeholder="Adresse email" className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none focus:ring-2 focus:ring-gold-500" value={email} onChange={(event) => setEmail(event.target.value)} />
-                    <input type="password" required placeholder="Mot de passe" className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none focus:ring-2 focus:ring-gold-500" value={password} onChange={(event) => setPassword(event.target.value)} />
-                    <button type="submit" className="flex w-full items-center justify-center gap-3 rounded-2xl py-5 gold-button">
-                      Se connecter
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
-                  </form>
-                )}
-              </div>
-            </motion.div>
-          </section>
+          <PublicLanding
+            email={email}
+            password={password}
+            showEmailLogin={showEmailLogin}
+            onEmailChange={setEmail}
+            onPasswordChange={setPassword}
+            onGoogleLogin={handleLogin}
+            onEmailLogin={handleEmailLogin}
+            onShowEmailLogin={setShowEmailLogin}
+          />
         ) : (
           <div className="space-y-14">
             {profile?.role === 'admin' && (
@@ -949,7 +1187,7 @@ export default function App() {
                       </p>
                     </header>
 
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:gap-8">
                       {orderedCandidates.map((candidate, index) => (
                         <React.Fragment key={candidate.id}>
                           <CandidateCard
