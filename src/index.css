@@ -35,12 +35,12 @@
 
 @layer base {
   body {
-    @apply bg-[#0a0a0a] text-slate-200 antialiased;
+    @apply bg-[#fcfaf3] text-slate-800 antialiased;
   }
   
   * {
     scrollbar-width: thin;
-    scrollbar-color: #eab308 #1a1a1a;
+    scrollbar-color: #eab308 #f5e8b8;
   }
   
   *::-webkit-scrollbar {
@@ -48,7 +48,7 @@
   }
   
   *::-webkit-scrollbar-track {
-    background: #1a1a1a;
+    background: #f5e8b8;
   }
   
   *::-webkit-scrollbar-thumb {
@@ -59,7 +59,7 @@
 
 @layer components {
   .glass-card {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+    @apply border border-stone-200/70 bg-white/75 backdrop-blur shadow-[0_8px_24px_rgba(15,23,42,0.04)];
   }
   
   .gold-gradient {
@@ -73,13 +73,13 @@
   }
   
   .gold-button {
-    background: linear-gradient(135deg, #BF953F, #B38728);
-    @apply text-black font-black shadow-[0_0_20px_rgba(191,149,63,0.3)] hover:shadow-[0_0_30px_rgba(191,149,63,0.5)] transition-all duration-300;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    @apply border border-gold-200/70 text-stone-800 font-semibold transition-all duration-300;
   }
   
   .red-button {
-    background: linear-gradient(135deg, #dc2626, #991b1b);
-    @apply text-white font-black shadow-[0_0_20px_rgba(220,38,38,0.3)] hover:shadow-[0_0_30px_rgba(220,38,38,0.5)] transition-all duration-300;
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    @apply border border-red-200/70 text-red-700 font-semibold transition-all duration-300;
   }
 
   .gold-glow {
@@ -91,16 +91,16 @@
   }
 
   .night-bg {
-    background: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
+    background: radial-gradient(circle at top right, #fff7d6, #fef3c7 45%, #fffaf0);
   }
   
   .luxury-bg {
-    background: linear-gradient(180deg, #0a0a0a 0%, #1a0a0a 50%, #0a0a0a 100%);
+    background: linear-gradient(180deg, #fffef9 0%, #fdf7e6 100%);
   }
   
   .candidate-card-hover:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(234, 179, 8, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
   }
   
   .ranking-badge {

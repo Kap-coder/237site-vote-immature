@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { User } from 'firebase/auth';
 import { authService } from './services/auth';
 import { dbService } from './services/db';
+import logo from '../logo.jpeg';
 import { Candidate, PaymentMethod, SiteConfig, UserProfile, Vote } from './types';
 import { Toaster, toast } from 'react-hot-toast';
 import {
@@ -20,6 +21,7 @@ import {
   Landmark,
   LayoutDashboard,
   LogOut,
+  Menu,
   Plus,
   Radio,
   Save,
@@ -64,38 +66,41 @@ const PAYMENT_METHODS: PaymentMethod[] = [
   { id: 'cash-demo', name: 'Cash demo', icon: 'cash', color: '#22c55e', enabled: true }
 ];
 
-const LANDING_NAV = [
-  { label: 'Experience', href: '#experience' },
-  { label: 'Partenaires', href: '#partenaires' },
-  { label: 'Paiements', href: '#paiements' },
-  { label: 'Connexion', href: '#connexion' }
+type PublicPage = 'experience' | 'partenaires' | 'paiements' | 'connexion' | 'editions';
+
+const PUBLIC_NAV_ITEMS: Array<{ label: string; key: PublicPage }> = [
+  { label: 'Expérience', key: 'experience' },
+  { label: 'Partenaires', key: 'partenaires' },
+  { label: 'Paiements', key: 'paiements' },
+  { label: 'Connexion', key: 'connexion' },
+  { label: 'Éditions précédentes', key: 'editions' }
 ];
 
 const EVENT_FEATURES = [
   {
     icon: Trophy,
-    title: 'Classement live',
-    text: 'Les votes montent en temps reel avec un podium clair et spectaculaire.'
+    title: 'Classement en direct',
+    text: 'Suivez la progression des candidats et découvrez qui mène la compétition en temps réel.'
   },
   {
     icon: ShieldCheck,
-    title: 'Vote controle',
-    text: 'Prix parametrable par admin, paiement demo et historique lisible.'
+    title: 'Vote simple et sécurisé',
+    text: 'Un parcours clair pour voter, vérifier son choix et suivre l’évolution du concours.'
   },
   {
     icon: Radio,
-    title: 'Animation publique',
-    text: 'Une interface qui donne envie de voter, partager et suivre la competition.'
+    title: 'Ambiance du concours',
+    text: 'Une interface fluide qui donne envie de participer, de suivre et de partager l’enthousiasme.'
   }
 ];
 
 const PARTNERS = ['Villa Prime', 'Gold Studio', 'Prestige Night', 'Media 237', 'Royal Drinks', 'Event Pulse'];
 
 const SALES_POINTS = [
-  'Landing page premium pour convaincre sponsors et public.',
-  'Espace partenaires pret pour logos, marques et packs visibility.',
-  'Parcours vote fluide: candidat, montant, paiement demo, resultat.',
-  'Design mobile vivant pour maximiser les votes pendant l evenement.'
+  'Une expérience de vote élégante, rapide et accessible à tous.',
+  'Des espaces dédiés pour découvrir les candidats et les partenaires du concours.',
+  'Un parcours fluide pour choisir, voter et suivre le résultat en direct.',
+  'Un design moderne et mobile pour participer partout, à tout moment.'
 ];
 
 const formatMoney = (value: number) => new Intl.NumberFormat('fr-CM').format(value);
@@ -141,59 +146,144 @@ const Loader = () => (
   </div>
 );
 
-const Navbar = ({ user, profile, onLogout, view, setView }: {
+const Navbar = ({ user, profile, onLogout, view, setView, publicView, setPublicView }: {
   user: User | null;
   profile: UserProfile | null;
   onLogout: () => void;
   view: 'vote' | 'admin';
   setView: (v: 'vote' | 'admin') => void;
-}) => (
-  <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur-2xl">
-    <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-      <div className="flex items-center gap-3">
-        <div className="rounded-2xl bg-gradient-to-br from-red-700 via-black to-gold-500 p-3 shadow-[0_0_30px_rgba(191,149,63,0.25)]">
-          <Crown className="h-6 w-6 text-white" />
-        </div>
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-red-300">Vote de prestige</p>
-          <p className="font-serif text-xl font-black text-white sm:text-2xl">La Villa des Immatures</p>
-        </div>
-      </div>
+  publicView: PublicPage;
+  setPublicView: (v: PublicPage) => void;
+}) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-      {user && (
-        <div className="flex items-center gap-4">
-          {profile?.role === 'admin' && (
-            <div className="hidden rounded-2xl border border-white/10 bg-white/5 p-1 sm:flex">
-              <button
-                onClick={() => setView('vote')}
-                className={`rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest transition ${view === 'vote' ? 'bg-gold-500 text-black' : 'text-slate-400 hover:text-white'}`}
-              >
-                Voter
-              </button>
-              <button
-                onClick={() => setView('admin')}
-                className={`rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest transition ${view === 'admin' ? 'bg-gold-500 text-black' : 'text-slate-400 hover:text-white'}`}
-              >
-                Admin
-              </button>
-            </div>
-          )}
-          <div className="hidden text-right md:block">
-            <p className="text-sm font-bold text-white">{profile?.name}</p>
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gold-500">{profile?.role}</p>
+  return (
+    <nav className="sticky top-0 z-50 border-b border-stone-200/70 bg-white/80 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-3">
+          <img
+            src={logo}
+            alt="Logo La Villa des Immatures"
+            className="h-12 w-12 rounded-2xl object-cover shadow-[0_0_20px_rgba(191,149,63,0.2)] sm:h-14 sm:w-14"
+          />
+          <div>
+            <p className="font-serif text-lg font-black text-slate-900 sm:text-xl">La Villa des Immatures</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-700">Concours de vote</p>
           </div>
+        </div>
+
+        <div className="hidden flex-wrap items-center justify-end gap-2 sm:flex">
+          {PUBLIC_NAV_ITEMS.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setPublicView(item.key)}
+              className={`rounded-full border border-transparent px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] transition ${publicView === item.key ? 'border-stone-200 bg-stone-100 text-slate-900' : 'text-slate-700 hover:bg-stone-100 hover:text-slate-900'}`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2 sm:hidden">
           <button
-            onClick={onLogout}
-            className="rounded-xl border border-white/10 p-3 text-slate-300 transition hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-300"
-            title="Deconnexion"
+            type="button"
+            onClick={() => setMobileMenuOpen((value) => !value)}
+            className="rounded-full border border-stone-200/70 bg-white p-2.5 text-slate-700 shadow-sm"
+            aria-label="Ouvrir le menu"
           >
-            <LogOut className="h-5 w-5" />
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
+
+        {user && (
+          <div className="hidden items-center gap-4 sm:flex">
+            {profile?.role === 'admin' && (
+              <div className="rounded-2xl border border-gold-200/70 bg-white/80 p-1">
+                <button
+                  onClick={() => setView('vote')}
+                  className={`rounded-full px-4 py-2 text-[10px] font-semibold uppercase tracking-widest transition ${view === 'vote' ? 'bg-stone-900 text-white' : 'text-slate-500 hover:text-slate-900'}`}
+                >
+                  Voter
+                </button>
+                <button
+                  onClick={() => setView('admin')}
+                  className={`rounded-full px-4 py-2 text-[10px] font-semibold uppercase tracking-widest transition ${view === 'admin' ? 'bg-stone-900 text-white' : 'text-slate-500 hover:text-slate-900'}`}
+                >
+                  Admin
+                </button>
+              </div>
+            )}
+            <div className="hidden text-right md:block">
+              <p className="text-sm font-bold text-slate-900">{profile?.name}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gold-700">{profile?.role}</p>
+            </div>
+            <button
+              onClick={onLogout}
+              className="rounded-xl border border-gold-200/70 p-3 text-slate-700 transition hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-600"
+              title="Deconnexion"
+            >
+              <LogOut className="h-5 w-5" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {mobileMenuOpen && (
+        <div className="border-t border-stone-200/70 bg-white/95 px-4 py-3 sm:hidden">
+          <div className="flex flex-col gap-2">
+            {PUBLIC_NAV_ITEMS.map((item) => (
+              <button
+                key={item.key}
+                onClick={() => {
+                  setPublicView(item.key);
+                  setMobileMenuOpen(false);
+                }}
+                className={`rounded-full px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.2em] transition ${publicView === item.key ? 'bg-stone-100 text-slate-900' : 'text-slate-700 hover:bg-stone-100 hover:text-slate-900'}`}
+              >
+                {item.label}
+              </button>
+            ))}
+
+            {user && profile?.role === 'admin' && (
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={() => {
+                    setView('vote');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`rounded-full px-4 py-2 text-[10px] font-semibold uppercase tracking-widest transition ${view === 'vote' ? 'bg-stone-900 text-white' : 'text-slate-600'}`}
+                >
+                  Voter
+                </button>
+                <button
+                  onClick={() => {
+                    setView('admin');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`rounded-full px-4 py-2 text-[10px] font-semibold uppercase tracking-widest transition ${view === 'admin' ? 'bg-stone-900 text-white' : 'text-slate-600'}`}
+                >
+                  Admin
+                </button>
+              </div>
+            )}
+
+            {user && (
+              <button
+                onClick={() => {
+                  onLogout();
+                  setMobileMenuOpen(false);
+                }}
+                className="rounded-full border border-stone-200/70 px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-700"
+              >
+                Déconnexion
+              </button>
+            )}
+          </div>
+        </div>
       )}
-    </div>
-  </nav>
-);
+    </nav>
+  );
+};
 
 const CandidateCard = ({ candidate, position, onOpen, disabled, hasVoted }: {
   candidate: Candidate;
@@ -282,7 +372,7 @@ const PaymentSheet = ({ candidate, config, onClose, onConfirm, processing }: {
       >
         <div className="mb-7 flex items-start justify-between gap-5">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-500">Paiement demonstration</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-500">Paiement</p>
             <h3 className="mt-2 font-serif text-3xl font-black text-white">Poursuivre le vote pour {candidate.name}</h3>
             <p className="mt-2 text-sm text-slate-400">Prix admin actuel: {formatMoney(votePrice)} FCFA / vote.</p>
           </div>
@@ -334,7 +424,7 @@ const PaymentSheet = ({ candidate, config, onClose, onConfirm, processing }: {
           </div>
 
           <div>
-            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-red-300">Choisir un moyen de paiement demo</p>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-red-300">Choisir un moyen de paiement</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {PAYMENT_METHODS.map((method) => {
                 const Icon = getPaymentIcon(method.icon);
@@ -467,7 +557,9 @@ const PublicLanding = ({
   onPasswordChange,
   onGoogleLogin,
   onEmailLogin,
-  onShowEmailLogin
+  onShowEmailLogin,
+  publicPage,
+  setPublicPage
 }: {
   email: string;
   password: string;
@@ -477,217 +569,134 @@ const PublicLanding = ({
   onGoogleLogin: () => void;
   onEmailLogin: (event: React.FormEvent) => void;
   onShowEmailLogin: (value: boolean) => void;
-}) => (
-  <section className="relative overflow-hidden">
-    <div className="mx-auto mb-10 flex max-w-5xl items-center justify-center">
-      <div className="flex w-full flex-wrap items-center justify-center gap-2 rounded-full border border-white/10 bg-black/35 p-2 backdrop-blur-xl sm:w-auto">
-        {LANDING_NAV.map((item) => (
-          <a
-            key={item.href}
-            href={item.href}
-            className="rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-300 transition hover:bg-gold-500 hover:text-black"
-          >
-            {item.label}
-          </a>
-        ))}
+  publicPage: PublicPage;
+  setPublicPage: (value: PublicPage) => void;
+}) => {
+  const pageMeta = {
+    experience: {
+      title: 'L’expérience de vote',
+      intro: 'Choisissez votre candidat, suivez le classement et vivez un moment de vote élégant et direct.',
+      bullets: ['Vote simple depuis mobile ou ordinateur', 'Classement en direct à chaque instant', 'Ambiance festive et premium']
+    },
+    partenaires: {
+      title: 'Les partenaires du concours',
+      intro: 'Des marques, lieux et espaces qui donnent vie à la soirée et mettent en valeur les candidats.',
+      bullets: ['Visibilité premium autour du vote', 'Écosystème de partenaires cohérent', 'Ambiance de gala pour le public']
+    },
+    paiements: {
+      title: 'Paiements et accès',
+      intro: 'Une expérience fluide pour entrer, voter et profiter du concours sans friction.',
+      bullets: ['Plusieurs moyens de paiement', 'Validation rapide du vote', 'Parcours clair pour tous les visiteurs']
+    },
+    connexion: {
+      title: 'Entrer dans la Villa',
+      intro: 'Connectez-vous pour rejoindre la salle de vote et faire entendre votre voix.',
+      bullets: ['Connexion Google ou par email', 'Accès rapide au vote', 'Interface pensée pour les visiteurs']
+    },
+    editions: {
+      title: 'Éditions précédentes',
+      intro: 'Revivez les éditions passées et découvrez l’évolution du concours au fil des années.',
+      bullets: ['Édition 2024 : première édition élégante', 'Édition 2025 : vote plus fluide et plus vivant', 'Édition 2026 : expérience premium renforcée']
+    }
+  }[publicPage];
+
+  return (
+    <section className="relative overflow-hidden space-y-8">
+      <div className="rounded-[1.5rem] border border-stone-200/70 bg-white/80 p-6 shadow-[0_8px_24px_rgba(15,23,42,0.04)] sm:p-8">
+        <div className="max-w-3xl">
+          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-700">La Villa des Immatures</p>
+          <h1 className="mt-3 font-serif text-4xl font-black leading-tight text-slate-900 sm:text-5xl">
+            {publicPage === 'connexion' ? 'Accédez au vote' : 'Choisissez votre moment de vote'}
+          </h1>
+          <p className="mt-4 text-lg font-medium leading-relaxed text-slate-700">{pageMeta.intro}</p>
+        </div>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <button onClick={() => setPublicPage('connexion')} className="rounded-full px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.22em] gold-button">
+            Voter maintenant
+          </button>
+          <button onClick={() => setPublicPage('partenaires')} className="rounded-full border border-stone-200 bg-white/80 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-slate-800 transition hover:border-stone-300 hover:bg-stone-50">
+            Voir les partenaires
+          </button>
+        </div>
       </div>
-    </div>
 
-    <div id="experience" className="grid min-h-[72vh] items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-      <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center lg:text-left">
-        <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-gold-500/10 px-4 py-2">
-          <Sparkles className="h-4 w-4 text-gold-400" />
-          <span className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-300">Evenement premium</span>
-        </div>
-        <h1 className="font-serif text-6xl font-black leading-[0.88] tracking-tighter text-white sm:text-8xl">
-          La Villa des <span className="gold-gradient">Immatures</span>
-        </h1>
-        <p className="mx-auto mt-7 max-w-2xl text-lg font-medium leading-relaxed text-slate-300 lg:mx-0">
-          Une plateforme de vote chic pour transformer votre evenement en experience visible, sponsorisable et memorable.
-        </p>
-
-        <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
-          <a href="#connexion" className="rounded-2xl px-6 py-4 text-xs font-black uppercase tracking-[0.22em] gold-button">
-            Demarrer le vote
-          </a>
-          <a href="#partenaires" className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-xs font-black uppercase tracking-[0.22em] text-white transition hover:border-red-400/50 hover:bg-red-500/10">
-            Voir les espaces
-          </a>
+      <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="rounded-[1.25rem] border border-stone-200/70 bg-white/80 p-6 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
+          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-red-600">{PUBLIC_NAV_ITEMS.find((item) => item.key === publicPage)?.label}</p>
+          <h2 className="mt-3 font-serif text-3xl font-black text-slate-900">{pageMeta.title}</h2>
+          <p className="mt-4 text-sm font-medium leading-relaxed text-slate-600">{pageMeta.intro}</p>
+          <ul className="mt-6 space-y-3">
+            {pageMeta.bullets.map((bullet) => (
+              <li key={bullet} className="flex items-start gap-3 rounded-full border border-stone-200/70 bg-white/70 p-3 text-sm font-medium text-slate-700">
+                <Star className="mt-0.5 h-4 w-4 flex-shrink-0 text-gold-600" />
+                <span>{bullet}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div className="mt-10 grid grid-cols-3 gap-3">
-          {[
-            ['100%', 'mobile'],
-            ['Live', 'classement'],
-            ['Demo', 'paiement']
-          ].map(([value, label]) => (
-            <motion.div
-              key={label}
-              whileHover={{ y: -4 }}
-              className="rounded-2xl border border-white/10 bg-white/[0.045] p-4 text-center backdrop-blur-xl"
-            >
-              <p className="font-serif text-2xl font-black text-white sm:text-4xl">{value}</p>
-              <p className="mt-1 text-[9px] font-black uppercase tracking-[0.22em] text-gold-400">{label}</p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.94 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.65, delay: 0.1 }}
-        className="relative"
-      >
-        <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-red-700/30 via-gold-500/10 to-black blur-2xl" />
-        <div className="relative overflow-hidden rounded-[3rem] border border-white/10 bg-black/45 p-5 shadow-2xl backdrop-blur-xl">
-          <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} className="rounded-[2.5rem] border border-gold-500/20 bg-gradient-to-br from-red-950 via-black to-[#2a1600] p-7">
-            <div className="flex items-center justify-between">
+        <div className="rounded-[1.25rem] border border-stone-200/70 bg-white/80 p-6 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
+          {publicPage === 'connexion' ? (
+            <div className="space-y-6">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-red-200">Soiree officielle</p>
-                <h2 className="mt-2 font-serif text-4xl font-black text-white">Vote prestige</h2>
+                <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-600">Connexion rapide</p>
+                <h3 className="mt-2 font-serif text-2xl font-black text-slate-900">Accédez au vote</h3>
               </div>
-              <Crown className="h-12 w-12 text-gold-400" />
+              <button onClick={onGoogleLogin} className="flex w-full items-center justify-center gap-4 rounded-full border border-stone-200 bg-white px-8 py-3.5 text-base font-semibold text-slate-800 transition hover:bg-stone-50">
+                <img src="https://www.google.com/favicon.ico" className="h-6 w-6" alt="Google" loading="lazy" />
+                Continuer avec Google
+              </button>
+              {!showEmailLogin ? (
+                <button onClick={() => onShowEmailLogin(true)} className="w-full text-xs font-black uppercase tracking-[0.25em] text-gold-600 transition hover:text-red-600">
+                  Utiliser un email
+                </button>
+              ) : (
+                <form onSubmit={onEmailLogin} className="space-y-4 text-left">
+                  <input type="email" required placeholder="Adresse email" className="w-full rounded-2xl border border-gold-200/60 bg-white/90 px-4 py-3 text-slate-800 outline-none focus:ring-2 focus:ring-gold-500" value={email} onChange={(event) => onEmailChange(event.target.value)} />
+                  <input type="password" required placeholder="Mot de passe" className="w-full rounded-2xl border border-gold-200/60 bg-white/90 px-4 py-3 text-slate-800 outline-none focus:ring-2 focus:ring-gold-500" value={password} onChange={(event) => onPasswordChange(event.target.value)} />
+                  <button type="submit" className="flex w-full items-center justify-center gap-3 rounded-full py-3 gold-button">
+                    Se connecter
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </form>
+              )}
             </div>
-            <div className="mt-8 space-y-4">
-              {SALES_POINTS.map((point, index) => (
-                <motion.div
-                  key={point}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.25 + index * 0.08 }}
-                  className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
-                >
-                  <Star className="mt-0.5 h-4 w-4 flex-shrink-0 text-gold-400" />
-                  <p className="text-sm font-bold leading-relaxed text-slate-200">{point}</p>
-                </motion.div>
+          ) : publicPage === 'partenaires' ? (
+            <div className="space-y-4">
+              {PARTNERS.map((partner) => (
+                <div key={partner} className="rounded-full border border-stone-200/70 bg-white/70 p-4 text-sm font-medium text-slate-700">
+                  {partner}
+                </div>
               ))}
             </div>
-          </motion.div>
-        </div>
-      </motion.div>
-    </div>
-
-    <div className="mt-16 grid gap-5 md:grid-cols-3">
-      {EVENT_FEATURES.map(({ icon: Icon, title, text }, index) => (
-        <motion.article
-          key={title}
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: index * 0.08 }}
-          className="glass-card rounded-[2rem] p-6"
-        >
-          <div className="mb-5 inline-flex rounded-2xl bg-red-500/10 p-3 text-gold-400 ring-1 ring-red-400/20">
-            <Icon className="h-6 w-6" />
-          </div>
-          <h3 className="font-serif text-2xl font-black text-white">{title}</h3>
-          <p className="mt-3 text-sm font-medium leading-relaxed text-slate-400">{text}</p>
-        </motion.article>
-      ))}
-    </div>
-
-    <div id="partenaires" className="mt-16 rounded-[3rem] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl sm:p-8">
-      <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-red-300">Visibilite sponsor</p>
-          <h2 className="mt-2 font-serif text-4xl font-black text-white">Espaces partenaires</h2>
-        </div>
-        <p className="max-w-md text-sm font-medium leading-relaxed text-slate-400">
-          Zones pretes pour logos, marques, boissons, medias, lieux et sponsors officiels.
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-        {PARTNERS.map((partner, index) => (
-          <motion.div
-            key={partner}
-            animate={{ y: [0, index % 2 === 0 ? -7 : 7, 0] }}
-            transition={{ duration: 4 + index * 0.25, repeat: Infinity, ease: 'easeInOut' }}
-            className="flex min-h-28 items-center justify-center rounded-2xl border border-gold-500/15 bg-black/35 p-4 text-center"
-          >
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-gold-200">{partner}</p>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-
-    <div className="mt-16 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-      <div id="paiements" className="glass-card rounded-[3rem] p-7 sm:p-8">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="rounded-2xl bg-gold-500/15 p-3 text-gold-400">
-            <CreditCard className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-red-300">Paiements demo</p>
-            <h2 className="font-serif text-3xl font-black text-white">Canaux populaires</h2>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          {PAYMENT_METHODS.slice(0, 8).map((method) => {
-            const Icon = getPaymentIcon(method.icon);
-            return (
-              <div key={method.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-                <Icon className="mb-3 h-5 w-5" style={{ color: method.color }} />
-                <p className="text-xs font-black text-white">{method.name}</p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div id="connexion" className="glass-card rounded-[3rem] p-7 sm:p-10">
-        <div className="mb-8 text-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-400">Acces vote</p>
-          <h2 className="mt-2 font-serif text-4xl font-black text-white">Entrer dans la Villa</h2>
-          <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-400">
-            Connectez-vous pour voter, suivre les candidats et participer a l ambiance.
-          </p>
-        </div>
-
-        <div className="mx-auto max-w-md space-y-7">
-          <button onClick={onGoogleLogin} className="flex w-full items-center justify-center gap-4 rounded-2xl bg-white px-10 py-5 text-lg font-black text-black shadow-[0_0_40px_rgba(255,255,255,0.12)] transition hover:bg-gold-500 hover:scale-[1.02]">
-            <img src="https://www.google.com/favicon.ico" className="h-6 w-6" alt="Google" loading="lazy" />
-            Continuer avec Google
-          </button>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/10" /></div>
-            <div className="relative flex justify-center text-[10px] uppercase tracking-[0.4em]"><span className="bg-[#120808] px-4 font-black text-slate-500">Ou</span></div>
-          </div>
-
-          {!showEmailLogin ? (
-            <button onClick={() => onShowEmailLogin(true)} className="w-full text-xs font-black uppercase tracking-widest text-gold-400 transition hover:text-white">
-              Acces par identifiants
-            </button>
+          ) : publicPage === 'paiements' ? (
+            <div className="space-y-4">
+              {PAYMENT_METHODS.slice(0, 6).map((method) => (
+                <div key={method.id} className="flex items-center justify-between rounded-full border border-stone-200/70 bg-white/70 px-4 py-3 text-sm font-medium text-slate-700">
+                  <span>{method.name}</span>
+                  <span className="text-gold-700">{method.enabled ? 'Disponible' : 'Bientôt'}</span>
+                </div>
+              ))}
+            </div>
+          ) : publicPage === 'editions' ? (
+            <div className="space-y-4">
+              {['2024', '2025', '2026'].map((year) => (
+                <div key={year} className="rounded-[1rem] border border-stone-200/70 bg-gradient-to-r from-[#fff8d6] to-white p-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gold-700">Édition {year}</p>
+                  <p className="mt-2 text-sm font-semibold text-slate-700">Une expérience de vote toujours plus élégante, plus fluide et plus proche du public.</p>
+                </div>
+              ))}
+            </div>
           ) : (
-            <form onSubmit={onEmailLogin} className="space-y-5 text-left">
-              <input type="email" required placeholder="Adresse email" className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none focus:ring-2 focus:ring-gold-500" value={email} onChange={(event) => onEmailChange(event.target.value)} />
-              <input type="password" required placeholder="Mot de passe" className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none focus:ring-2 focus:ring-gold-500" value={password} onChange={(event) => onPasswordChange(event.target.value)} />
-              <button type="submit" className="flex w-full items-center justify-center gap-3 rounded-2xl py-5 gold-button">
-                Se connecter
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </form>
+            <div className="rounded-[1rem] border border-stone-200/70 bg-gradient-to-br from-[#fff8d6] to-white p-6 text-sm font-medium leading-relaxed text-slate-700">
+              Chaque invité peut voter, suivre le classement et vivre l’émotion d’un concours de prestige, en quelques clics seulement.
+            </div>
           )}
         </div>
       </div>
-    </div>
-
-    <div className="mt-16 grid gap-5 md:grid-cols-3">
-      {[
-        { icon: CalendarDays, title: 'Avant event', text: 'Annoncez les candidats, ouvrez les votes et vendez la visibilite.' },
-        { icon: Handshake, title: 'Pendant event', text: 'Animez la salle avec le classement et les paiements demo.' },
-        { icon: Gem, title: 'Apres event', text: 'Valorisez les resultats, les sponsors et la prochaine edition.' }
-      ].map(({ icon: Icon, title, text }) => (
-        <div key={title} className="rounded-[2rem] border border-white/10 bg-black/30 p-6">
-          <Icon className="mb-4 h-6 w-6 text-gold-400" />
-          <h3 className="font-serif text-2xl font-black text-white">{title}</h3>
-          <p className="mt-3 text-sm font-medium leading-relaxed text-slate-400">{text}</p>
-        </div>
-      ))}
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const AdminPanel = ({ candidates, users, votes, config }: {
   candidates: Candidate[];
@@ -990,6 +999,7 @@ export default function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showEmailLogin, setShowEmailLogin] = useState(false);
+  const [publicPage, setPublicPage] = useState<PublicPage>('experience');
 
   const orderedCandidates = [...candidates].sort((a, b) => b.voteCount - a.voteCount);
 
@@ -1119,7 +1129,7 @@ export default function App() {
   const selectedFreshCandidate = selectedCandidate ? orderedCandidates.find((candidate) => candidate.id === selectedCandidate.id) || selectedCandidate : null;
 
   return (
-    <div className="min-h-screen luxury-bg font-sans text-slate-200 selection:bg-gold-500/30">
+    <div className="min-h-screen luxury-bg font-sans text-slate-800 selection:bg-gold-500/30">
       <Toaster
         position="top-right"
         toastOptions={{
@@ -1131,7 +1141,7 @@ export default function App() {
           }
         }}
       />
-      <Navbar user={user} profile={profile} onLogout={handleLogout} view={view} setView={setView} />
+      <Navbar user={user} profile={profile} onLogout={handleLogout} view={view} setView={setView} publicView={publicPage} setPublicView={setPublicPage} />
 
       <main className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="pointer-events-none fixed left-[-10%] top-24 h-96 w-96 rounded-full bg-red-700/20 blur-[120px]" />
@@ -1147,6 +1157,8 @@ export default function App() {
             onGoogleLogin={handleLogin}
             onEmailLogin={handleEmailLogin}
             onShowEmailLogin={setShowEmailLogin}
+            publicPage={publicPage}
+            setPublicPage={setPublicPage}
           />
         ) : (
           <div className="space-y-14">
@@ -1228,7 +1240,7 @@ export default function App() {
         <div className="mx-auto max-w-7xl px-4 text-center">
           <LayoutDashboard className="mx-auto mb-5 h-8 w-8 text-gold-500/70" />
           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500">
-            &copy; 2026 La Villa des Immatures - Demo vote prestige
+            &copy; 2026 La Villa des Immatures - Vote prestige
           </p>
         </div>
       </footer>
