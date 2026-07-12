@@ -298,7 +298,7 @@ const CandidateCard = ({ candidate, position, onOpen, disabled, hasVoted }: {
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: '-60px' }}
     whileHover={{ y: -8 }}
-    className="group overflow-hidden rounded-[1.25rem] border border-white/10 bg-white/[0.055] shadow-2xl backdrop-blur-xl sm:rounded-[2rem]"
+    className="group overflow-hidden rounded-[1.25rem] border border-stone-200/70 bg-white/90 shadow-[0_8px_24px_rgba(15,23,42,0.04)] backdrop-blur-xl sm:rounded-[2rem]"
   >
     <div className="relative aspect-[4/5] overflow-hidden bg-black sm:aspect-[16/13]">
       <img
@@ -324,7 +324,7 @@ const CandidateCard = ({ candidate, position, onOpen, disabled, hasVoted }: {
     </div>
 
     <div className="space-y-3 p-3 sm:space-y-5 sm:p-6">
-      <p className="line-clamp-2 min-h-[2.5rem] text-xs font-medium leading-relaxed text-slate-300 sm:line-clamp-3 sm:min-h-[4.5rem] sm:text-sm">
+      <p className="line-clamp-2 min-h-[2.5rem] text-xs font-medium leading-relaxed text-slate-700 sm:line-clamp-3 sm:min-h-[4.5rem] sm:text-sm">
         {candidate.description || 'Une candidate prete a marquer la soiree avec style, energie et presence.'}
       </p>
       <button
@@ -367,33 +367,33 @@ const PaymentSheet = ({ candidate, config, onClose, onConfirm, processing }: {
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-        className="payment-modal max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-t-[2.5rem] border border-white/10 bg-[#080606] p-5 shadow-[0_-30px_100px_rgba(127,29,29,0.45)] sm:p-8"
+        className="payment-modal max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-t-[2.5rem] border border-stone-200/70 bg-white/95 p-5 shadow-[0_-20px_60px_rgba(15,23,42,0.08)] sm:p-8"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-7 flex items-start justify-between gap-5">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-500">Paiement</p>
-            <h3 className="mt-2 font-serif text-3xl font-black text-white">Poursuivre le vote pour {candidate.name}</h3>
-            <p className="mt-2 text-sm text-slate-400">Prix admin actuel: {formatMoney(votePrice)} FCFA / vote.</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gold-700">Paiement</p>
+            <h3 className="mt-2 font-serif text-3xl font-black text-slate-900">Poursuivre le vote pour {candidate.name}</h3>
+            <p className="mt-2 text-sm text-slate-600">Prix admin actuel: {formatMoney(votePrice)} FCFA / vote.</p>
           </div>
-          <button onClick={onClose} className="rounded-full border border-white/10 p-3 text-slate-300 hover:bg-white/10">
+          <button onClick={onClose} className="rounded-full border border-stone-200/70 p-3 text-slate-700 hover:bg-stone-100">
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5">
-            <label className="mb-3 block text-[10px] font-black uppercase tracking-[0.25em] text-red-300">
+          <div className="rounded-[2rem] border border-stone-200/70 bg-stone-50/80 p-5">
+            <label className="mb-3 block text-[10px] font-black uppercase tracking-[0.25em] text-red-700">
               Montant a depenser
             </label>
-            <div className="flex items-center rounded-2xl border border-white/10 bg-black/40 px-5 py-4">
+            <div className="flex items-center rounded-2xl border border-stone-200/70 bg-white px-5 py-4">
               <input
                 type="number"
                 min={votePrice}
                 step={votePrice}
                 value={amount}
                 onChange={(event) => setAmount(Number(event.target.value))}
-                className="w-full bg-transparent text-3xl font-black text-white outline-none"
+                className="w-full bg-transparent text-3xl font-black text-slate-900 outline-none"
               />
               <span className="text-xs font-black uppercase tracking-widest text-gold-400">FCFA</span>
             </div>
@@ -404,7 +404,7 @@ const PaymentSheet = ({ candidate, config, onClose, onConfirm, processing }: {
                   key={votes}
                   type="button"
                   onClick={() => setVotes(votes)}
-                  className="rounded-2xl border border-white/10 bg-white/5 py-3 text-xs font-black text-white transition hover:border-gold-500/50 hover:bg-gold-500/10"
+                  className="rounded-2xl border border-stone-200/70 bg-white py-3 text-xs font-black text-slate-900 transition hover:border-gold-500/50 hover:bg-gold-50"
                 >
                   {votes} votes
                 </button>
@@ -412,11 +412,11 @@ const PaymentSheet = ({ candidate, config, onClose, onConfirm, processing }: {
             </div>
 
             <div className="mt-5 rounded-2xl border border-gold-500/25 bg-gold-500/10 p-5">
-              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gold-300">Resultat calcule</p>
-              <p className="mt-2 font-serif text-5xl font-black text-white">{formatMoney(quantity)}</p>
-              <p className="mt-1 text-sm text-slate-400">votes seront ajoutes apres validation fictive.</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gold-700">Resultat calcule</p>
+              <p className="mt-2 font-serif text-5xl font-black text-slate-900">{formatMoney(quantity)}</p>
+              <p className="mt-1 text-sm text-slate-600">votes seront ajoutes apres validation fictive.</p>
               {lostAmount > 0 && (
-                <p className="mt-4 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-xs font-bold text-red-200">
+                <p className="mt-4 rounded-xl border border-red-200/70 bg-red-50 p-3 text-xs font-bold text-red-700">
                   {formatMoney(lostAmount)} FCFA ne correspond pas au prix d'un vote. L'application arrondit par defaut a {formatMoney(compatibleAmount)} FCFA utiles.
                 </p>
               )}
@@ -424,7 +424,7 @@ const PaymentSheet = ({ candidate, config, onClose, onConfirm, processing }: {
           </div>
 
           <div>
-            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-red-300">Choisir un moyen de paiement</p>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-red-700">Choisir un moyen de paiement</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {PAYMENT_METHODS.map((method) => {
                 const Icon = getPaymentIcon(method.icon);
@@ -434,14 +434,14 @@ const PaymentSheet = ({ candidate, config, onClose, onConfirm, processing }: {
                     key={method.id}
                     type="button"
                     onClick={() => setSelectedMethod(method.id)}
-                    className={`flex items-center gap-3 rounded-2xl border p-4 text-left transition ${active ? 'border-gold-500 bg-gold-500/15' : 'border-white/10 bg-white/[0.04] hover:border-white/25'}`}
+                    className={`flex items-center gap-3 rounded-2xl border p-4 text-left transition ${active ? 'border-gold-500 bg-gold-50' : 'border-stone-200/70 bg-white hover:border-stone-300'}`}
                   >
                     <span className="rounded-xl p-3" style={{ backgroundColor: `${method.color}22`, color: method.color }}>
                       <Icon className="h-5 w-5" />
                     </span>
                     <span>
-                      <span className="block text-sm font-black text-white">{method.name}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Validation fictive</span>
+                      <span className="block text-sm font-black text-slate-900">{method.name}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Validation fictive</span>
                     </span>
                   </button>
                 );
@@ -480,7 +480,7 @@ const CandidateDetail = ({ candidate, position, config, hasVoted, onBack, onStar
   >
     <button
       onClick={onBack}
-      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-300 transition hover:border-gold-500/40 hover:text-white"
+      className="inline-flex items-center gap-2 rounded-full border border-stone-200/70 bg-white/90 px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-800 transition hover:border-gold-500/40 hover:text-slate-900"
     >
       <ArrowLeft className="h-4 w-4" />
       Retour aux candidats
@@ -490,7 +490,7 @@ const CandidateDetail = ({ candidate, position, config, hasVoted, onBack, onStar
       <motion.div
         animate={{ y: [0, -10, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-        className="relative min-h-[520px] overflow-hidden rounded-[3rem] border border-white/10 bg-black shadow-2xl"
+        className="relative min-h-[520px] overflow-hidden rounded-[3rem] border border-stone-200/70 bg-stone-100 shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
       >
         <img
           src={candidate.image || `https://picsum.photos/seed/${candidate.id}/900/1100`}
@@ -504,28 +504,28 @@ const CandidateDetail = ({ candidate, position, config, hasVoted, onBack, onStar
         </div>
       </motion.div>
 
-      <div className="flex flex-col justify-center rounded-[3rem] border border-white/10 bg-white/[0.055] p-7 backdrop-blur-xl sm:p-10">
-        <p className="mb-4 inline-flex w-fit rounded-full border border-red-500/25 bg-red-500/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.35em] text-red-200">
+      <div className="flex flex-col justify-center rounded-[3rem] border border-stone-200/70 bg-white/90 p-7 shadow-[0_8px_24px_rgba(15,23,42,0.04)] backdrop-blur-xl sm:p-10">
+        <p className="mb-4 inline-flex w-fit rounded-full border border-red-200/70 bg-red-50 px-4 py-2 text-[10px] font-black uppercase tracking-[0.35em] text-red-700">
           Page candidate unique
         </p>
-        <h2 className="font-serif text-5xl font-black leading-none text-white sm:text-7xl">{candidate.name}</h2>
+        <h2 className="font-serif text-5xl font-black leading-none text-slate-900 sm:text-7xl">{candidate.name}</h2>
         <div className="my-7 h-px w-full bg-gradient-to-r from-gold-500 via-red-600 to-transparent" />
-        <p className="text-lg font-medium leading-relaxed text-slate-300">
+        <p className="text-lg font-medium leading-relaxed text-slate-700">
           {candidate.fullDescription || candidate.description || 'Une presence forte, une energie singuliere et une envie claire de briller pendant La Villa des Immatures.'}
         </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-black/35 p-5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-gold-400">Position</p>
-            <p className="mt-2 text-3xl font-black text-white">{positionLabel(position)}</p>
+          <div className="rounded-2xl border border-stone-200/70 bg-stone-50 p-5">
+            <p className="text-[10px] font-black uppercase tracking-widest text-gold-700">Position</p>
+            <p className="mt-2 text-3xl font-black text-slate-900">{positionLabel(position)}</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-black/35 p-5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-gold-400">Votes</p>
-            <p className="mt-2 text-3xl font-black text-white">{formatMoney(candidate.voteCount)}</p>
+          <div className="rounded-2xl border border-stone-200/70 bg-stone-50 p-5">
+            <p className="text-[10px] font-black uppercase tracking-widest text-gold-700">Votes</p>
+            <p className="mt-2 text-3xl font-black text-slate-900">{formatMoney(candidate.voteCount)}</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-black/35 p-5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-gold-400">Prix vote</p>
-            <p className="mt-2 text-3xl font-black text-white">{formatMoney(config.votePrice)}</p>
+          <div className="rounded-2xl border border-stone-200/70 bg-stone-50 p-5">
+            <p className="text-[10px] font-black uppercase tracking-widest text-gold-700">Prix vote</p>
+            <p className="mt-2 text-3xl font-black text-slate-900">{formatMoney(config.votePrice)}</p>
           </div>
         </div>
 
@@ -786,12 +786,12 @@ const AdminPanel = ({ candidates, users, votes, config }: {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap gap-2 rounded-2xl border border-white/10 bg-white/5 p-1.5">
+      <div className="flex flex-wrap gap-2 rounded-2xl border border-stone-200/70 bg-white/80 p-1.5">
         {tabs.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className={`rounded-xl px-4 py-2.5 text-xs font-black uppercase tracking-widest transition ${activeTab === id ? 'bg-gold-500 text-black shadow-lg' : 'text-slate-400 hover:text-white'}`}
+            className={`rounded-xl px-4 py-2.5 text-xs font-black uppercase tracking-widest transition ${activeTab === id ? 'bg-gold-500 text-black shadow-lg' : 'text-slate-600 hover:text-slate-900'}`}
           >
             <Icon className="mr-2 inline h-4 w-4" />
             {label}
@@ -803,7 +803,7 @@ const AdminPanel = ({ candidates, users, votes, config }: {
         {activeTab === 'stats' && (
           <motion.div key="stats" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid gap-8 lg:grid-cols-3">
             <div className="glass-card rounded-[2rem] p-8 lg:col-span-2">
-              <h3 className="mb-8 font-serif text-xl font-black uppercase tracking-widest text-white">Resultats en direct</h3>
+              <h3 className="mb-8 font-serif text-xl font-black uppercase tracking-widest text-slate-900">Resultats en direct</h3>
               <div className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={candidates}>
@@ -825,12 +825,12 @@ const AdminPanel = ({ candidates, users, votes, config }: {
                 <h4 className="mt-2 font-serif text-6xl font-black">{formatMoney(totalVotes)}</h4>
               </div>
               <div className="glass-card rounded-[2rem] p-8">
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gold-500">Prix actuel</p>
-                <h4 className="mt-2 font-serif text-5xl font-black text-white">{formatMoney(config.votePrice)}</h4>
-                <p className="mt-2 text-xs font-bold text-slate-500">FCFA par vote</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gold-700">Prix actuel</p>
+                <h4 className="mt-2 font-serif text-5xl font-black text-slate-900">{formatMoney(config.votePrice)}</h4>
+                <p className="mt-2 text-xs font-bold text-slate-600">FCFA par vote</p>
               </div>
               <div className="rounded-[2rem] border border-red-500/20 bg-red-500/5 p-8">
-                <p className="mb-4 text-[10px] font-black uppercase tracking-[0.3em] text-red-400">Zone de danger</p>
+                <p className="mb-4 text-[10px] font-black uppercase tracking-[0.3em] text-red-700">Zone de danger</p>
                 <button onClick={handleResetDB} className="w-full rounded-2xl border border-red-500/30 bg-red-500/10 px-6 py-4 text-[10px] font-black uppercase tracking-widest text-red-200 transition hover:bg-red-600 hover:text-white">
                   <Trash2 className="mr-2 inline h-4 w-4" />
                   Reinitialiser
@@ -842,16 +842,16 @@ const AdminPanel = ({ candidates, users, votes, config }: {
 
         {activeTab === 'settings' && (
           <motion.form key="settings" onSubmit={handleSaveSettings} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="glass-card max-w-2xl rounded-[2rem] p-8">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gold-500">Parametre admin uniquement</p>
-            <h3 className="mt-2 font-serif text-4xl font-black text-white">Prix d'un vote</h3>
-            <p className="mt-3 text-sm leading-relaxed text-slate-400">Ce montant controle automatiquement le calcul des votes dans le modal de paiement. Exemple: si le vote vaut 100 FCFA et que l'utilisateur met 150 FCFA, l'app retient 1 vote.</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gold-700">Parametre admin uniquement</p>
+            <h3 className="mt-2 font-serif text-4xl font-black text-slate-900">Prix d'un vote</h3>
+            <p className="mt-3 text-sm leading-relaxed text-slate-600">Ce montant controle automatiquement le calcul des votes dans le modal de paiement. Exemple: si le vote vaut 100 FCFA et que l'utilisateur met 150 FCFA, l'app retient 1 vote.</p>
             <div className="mt-7 flex items-center rounded-2xl border border-white/10 bg-black/35 px-5 py-4">
               <input
                 type="number"
                 min={1}
                 value={votePrice}
                 onChange={(event) => setVotePrice(Number(event.target.value))}
-                className="w-full bg-transparent text-4xl font-black text-white outline-none"
+                className="w-full bg-transparent text-4xl font-black text-slate-900 outline-none"
               />
               <span className="text-xs font-black uppercase tracking-widest text-gold-400">FCFA</span>
             </div>
@@ -867,9 +867,9 @@ const AdminPanel = ({ candidates, users, votes, config }: {
             <form onSubmit={handleAddCandidate} className="glass-card rounded-[2rem] p-8">
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
-                  <input type="text" placeholder="Nom du candidat" className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none focus:ring-2 focus:ring-gold-500" value={newCandidate.name} onChange={(event) => setNewCandidate({ ...newCandidate, name: event.target.value })} />
-                  <textarea placeholder="Description courte" rows={3} className="w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none focus:ring-2 focus:ring-gold-500" value={newCandidate.description} onChange={(event) => setNewCandidate({ ...newCandidate, description: event.target.value })} />
-                  <textarea placeholder="Description complete pour la page candidat" rows={5} className="w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none focus:ring-2 focus:ring-gold-500" value={newCandidate.fullDescription} onChange={(event) => setNewCandidate({ ...newCandidate, fullDescription: event.target.value })} />
+                  <input type="text" placeholder="Nom du candidat" className="w-full rounded-2xl border border-stone-200/70 bg-white px-5 py-4 text-slate-900 outline-none focus:ring-2 focus:ring-gold-500" value={newCandidate.name} onChange={(event) => setNewCandidate({ ...newCandidate, name: event.target.value })} />
+                  <textarea placeholder="Description courte" rows={3} className="w-full resize-none rounded-2xl border border-stone-200/70 bg-white px-5 py-4 text-slate-900 outline-none focus:ring-2 focus:ring-gold-500" value={newCandidate.description} onChange={(event) => setNewCandidate({ ...newCandidate, description: event.target.value })} />
+                  <textarea placeholder="Description complete pour la page candidat" rows={5} className="w-full resize-none rounded-2xl border border-stone-200/70 bg-white px-5 py-4 text-slate-900 outline-none focus:ring-2 focus:ring-gold-500" value={newCandidate.fullDescription} onChange={(event) => setNewCandidate({ ...newCandidate, fullDescription: event.target.value })} />
                 </div>
 
                 <div className="flex cursor-pointer flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-white/10 bg-white/5 p-6 transition hover:bg-white/10" onClick={() => fileInputRef.current?.click()}>
@@ -884,8 +884,8 @@ const AdminPanel = ({ candidates, users, votes, config }: {
                   ) : (
                     <div className="text-center">
                       <Upload className="mx-auto mb-4 h-10 w-10 text-gold-500" />
-                      <p className="font-bold text-white">Uploader une photo</p>
-                      <p className="mt-2 text-[10px] font-black uppercase tracking-widest text-slate-500">JPG, PNG max 500KB</p>
+                      <p className="font-bold text-slate-900">Uploader une photo</p>
+                      <p className="mt-2 text-[10px] font-black uppercase tracking-widest text-slate-600">JPG, PNG max 500KB</p>
                     </div>
                   )}
                 </div>
@@ -903,8 +903,8 @@ const AdminPanel = ({ candidates, users, votes, config }: {
                     <img src={candidate.image || `https://picsum.photos/seed/${candidate.id}/200/200`} alt="" className="h-full w-full object-cover" />
                   </div>
                   <div className="flex-grow">
-                    <p className="font-serif text-lg font-black text-white">{candidate.name}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gold-500">{positionLabel(index + 1)} - {formatMoney(candidate.voteCount)} votes</p>
+                    <p className="font-serif text-lg font-black text-slate-900">{candidate.name}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gold-700">{positionLabel(index + 1)} - {formatMoney(candidate.voteCount)} votes</p>
                   </div>
                   <button onClick={() => dbService.deleteCandidate(candidate.id)} className="rounded-xl p-3 text-slate-500 transition hover:bg-red-500/10 hover:text-red-400">
                     <Trash2 className="h-5 w-5" />
@@ -929,8 +929,8 @@ const AdminPanel = ({ candidates, users, votes, config }: {
                 <tbody className="divide-y divide-white/5">
                   {users.map((appUser) => (
                     <tr key={appUser.id} className="transition hover:bg-white/5">
-                      <td className="px-8 py-6 font-bold text-white">{appUser.name}</td>
-                      <td className="px-8 py-6 text-sm text-slate-400">{appUser.email}</td>
+                      <td className="px-8 py-6 font-bold text-slate-900">{appUser.name}</td>
+                      <td className="px-8 py-6 text-sm text-slate-600">{appUser.email}</td>
                       <td className="px-8 py-6">
                         {appUser.hasVoted ? (
                           <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-300">
@@ -955,7 +955,7 @@ const AdminPanel = ({ candidates, users, votes, config }: {
         {activeTab === 'admins' && (
           <motion.div key="admins" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-8">
             <form onSubmit={handleAddAdminEmail} className="glass-card flex flex-col gap-4 rounded-[2rem] p-8 md:flex-row">
-              <input type="email" placeholder="Email du nouvel administrateur" className="flex-grow rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none focus:ring-2 focus:ring-gold-500" value={newAdminEmail} onChange={(event) => setNewAdminEmail(event.target.value)} required />
+              <input type="email" placeholder="Email du nouvel administrateur" className="flex-grow rounded-2xl border border-stone-200/70 bg-white px-5 py-4 text-slate-900 outline-none focus:ring-2 focus:ring-gold-500" value={newAdminEmail} onChange={(event) => setNewAdminEmail(event.target.value)} required />
               <button type="submit" className="rounded-2xl px-8 py-4 text-xs font-black uppercase tracking-widest gold-button">
                 <Plus className="mr-2 inline h-5 w-5" />
                 Ajouter
@@ -965,8 +965,8 @@ const AdminPanel = ({ candidates, users, votes, config }: {
               {adminEmails.map((admin) => (
                 <div key={admin.email} className="glass-card flex items-center justify-between rounded-[2rem] p-6">
                   <div>
-                    <p className="font-bold text-white">{admin.email}</p>
-                    <p className="text-[10px] uppercase tracking-widest text-slate-500">Ajoute par {admin.addedBy}</p>
+                    <p className="font-bold text-slate-900">{admin.email}</p>
+                    <p className="text-[10px] uppercase tracking-widest text-slate-600">Ajoute par {admin.addedBy}</p>
                   </div>
                   {admin.email !== 'angekapel007@gmail.com' && (
                     <button onClick={() => dbService.removeAdminEmail(admin.email)} className="rounded-xl p-3 text-slate-500 hover:bg-red-500/10 hover:text-red-400">
@@ -1164,9 +1164,9 @@ export default function App() {
           <div className="space-y-14">
             {profile?.role === 'admin' && (
               <div className="flex justify-center sm:hidden">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-1">
-                  <button onClick={() => setView('vote')} className={`rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest ${view === 'vote' ? 'bg-gold-500 text-black' : 'text-slate-400'}`}>Voter</button>
-                  <button onClick={() => setView('admin')} className={`rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest ${view === 'admin' ? 'bg-gold-500 text-black' : 'text-slate-400'}`}>Admin</button>
+                <div className="rounded-2xl border border-stone-200/70 bg-white/90 p-1">
+                  <button onClick={() => setView('vote')} className={`rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest ${view === 'vote' ? 'bg-gold-500 text-black' : 'text-slate-700'}`}>Voter</button>
+                  <button onClick={() => setView('admin')} className={`rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest ${view === 'admin' ? 'bg-gold-500 text-black' : 'text-slate-700'}`}>Admin</button>
                 </div>
               </div>
             )}
@@ -1190,11 +1190,11 @@ export default function App() {
                 ) : (
                   <motion.section key="candidate-list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-12">
                     <header className="mx-auto max-w-3xl text-center">
-                      <p className="mb-4 text-[10px] font-black uppercase tracking-[0.4em] text-red-300">{config.eventName}</p>
-                      <h2 className="font-serif text-5xl font-black leading-none text-white sm:text-7xl">
+                      <p className="mb-4 text-[10px] font-black uppercase tracking-[0.4em] text-red-700">{config.eventName}</p>
+                      <h2 className="font-serif text-5xl font-black leading-none text-slate-900 sm:text-7xl">
                         Classement <span className="gold-gradient">en direct</span>
                       </h2>
-                      <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-relaxed text-slate-300">
+                      <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-relaxed text-slate-700">
                         Les candidats sont affiches du plus vote au moins vote. Le premier est donc toujours en tete du prestige.
                       </p>
                     </header>
@@ -1214,14 +1214,14 @@ export default function App() {
                       {orderedCandidates.length === 0 && (
                         <div className="col-span-full rounded-[3rem] border-2 border-dashed border-white/10 bg-white/[0.03] py-32 text-center">
                           <Trophy className="mx-auto mb-6 h-16 w-16 text-white/10" />
-                          <p className="text-sm font-black uppercase tracking-[0.3em] text-slate-500">Ouverture des candidatures prochainement</p>
+                          <p className="text-sm font-black uppercase tracking-[0.3em] text-slate-600">Ouverture des candidatures prochainement</p>
                         </div>
                       )}
                     </div>
 
                     {profile?.hasVoted && (
                       <div className="flex justify-center">
-                        <button onClick={handleCancelVote} disabled={voting} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-red-300 transition hover:text-red-200 disabled:opacity-50">
+                        <button onClick={handleCancelVote} disabled={voting} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-red-700 transition hover:text-red-600 disabled:opacity-50">
                           <Trash2 className="h-4 w-4" />
                           Annuler mon vote pour changer de choix
                         </button>
@@ -1239,7 +1239,7 @@ export default function App() {
         <div className="absolute left-1/2 top-0 h-px w-full -translate-x-1/2 bg-gradient-to-r from-transparent via-gold-500/50 to-transparent" />
         <div className="mx-auto max-w-7xl px-4 text-center">
           <LayoutDashboard className="mx-auto mb-5 h-8 w-8 text-gold-500/70" />
-          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500">
+          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-600">
             &copy; 2026 La Villa des Immatures - Vote prestige
           </p>
         </div>
